@@ -45,7 +45,6 @@ from library.utilities import utilities_tab
 from library.class_sample_images import SampleImages, run_cmd_sample
 
 from library.custom_logging import setup_logging
-from localization_ext import add_javascript
 
 # Set up logging
 log = setup_logging()
@@ -988,7 +987,6 @@ def ti_tab(
 
 
 def UI(**kwargs):
-    add_javascript(kwargs.get('language'))
     css = ''
 
     headless = kwargs.get('headless', False)
@@ -1072,9 +1070,6 @@ if __name__ == '__main__':
     parser.add_argument(
         '--headless', action='store_true', help='Is the server headless'
     )
-    parser.add_argument(
-        '--language', type=str, default=None, help='Set custom language'
-    )
 
     args = parser.parse_args()
 
@@ -1086,5 +1081,4 @@ if __name__ == '__main__':
         share=args.share,
         listen=args.listen,
         headless=args.headless,
-        language=args.language,
     )

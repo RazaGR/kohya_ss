@@ -255,7 +255,7 @@ def create_upscaler(**kwargs):
 
 # another interface: upscale images with a model for given images from command line
 def upscale_images(args: argparse.Namespace):
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("mps" if torch.backends.mps.is_available() and torch.backends.mps.is_built() else "cuda" if torch.cuda.is_available() else "cpu")
     us_dtype = torch.float16  # TODO: support fp32/bf16
     os.makedirs(args.output_dir, exist_ok=True)
 

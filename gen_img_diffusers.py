@@ -2319,7 +2319,7 @@ def main(args):
         scheduler.config.clip_sample = True
 
     # deviceを決定する
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # "mps"を考量してない
+    device = torch.device("mps" if torch.backends.mps.is_available() and torch.backends.mps.is_built() else "cuda" if torch.cuda.is_available() else "cpu")
 
     # custom pipelineをコピったやつを生成する
     if args.vae_slices:

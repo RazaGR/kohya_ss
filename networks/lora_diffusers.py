@@ -471,7 +471,7 @@ if __name__ == "__main__":
     from diffusers import StableDiffusionPipeline, StableDiffusionXLPipeline
     import torch
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("mps" if torch.backends.mps.is_available() and torch.backends.mps.is_built() else "cuda" if torch.cuda.is_available() else "cpu")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_id", type=str, default=None, help="model id for huggingface")

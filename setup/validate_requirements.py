@@ -35,6 +35,7 @@ def check_torch():
         '/opt/rocm/bin/rocminfo'
     ):
         log.info('AMD toolkit detected')
+
     else:
         log.info('Using CPU-only Torch')
 
@@ -43,8 +44,11 @@ def check_torch():
 
         log.info(f'Torch {torch.__version__}')
 
+
+        if torch.backends.mps.is_available() and torch.backends.mps.is_built():
+            log.info('Torch reports MPS available')
         # Check if CUDA is available
-        if not torch.cuda.is_available():
+        elif not torch.cuda.is_available():
             log.warning('Torch reports CUDA not available')
         else:
             if torch.version.cuda:

@@ -451,11 +451,10 @@ class PipelineLike:
         tes_text_embs = []
         tes_uncond_embs = []
         tes_real_uncond_embs = []
-
+        # use last pool
         for tokenizer, text_encoder in zip(self.tokenizers, self.text_encoders):
             token_replacer = self.get_token_replacer(tokenizer)
 
-            # use last text_pool, because it is from text encoder 2
             text_embeddings, text_pool, uncond_embeddings, uncond_pool, _ = get_weighted_text_embeddings(
                 tokenizer,
                 text_encoder,
@@ -529,11 +528,6 @@ class PipelineLike:
         emb3 = sdxl_train_util.get_timestep_embedding(torch.FloatTensor([height, width]).unsqueeze(0), 256)
         c_vector = torch.cat([emb1, emb2, emb3], dim=1).to(self.device, dtype=text_embeddings.dtype).repeat(batch_size, 1)
         uc_vector = torch.cat([uc_emb1, emb2, emb3], dim=1).to(self.device, dtype=text_embeddings.dtype).repeat(batch_size, 1)
-
-        if reginonal_network:
-            # use last pool for conditioning
-            num_sub_prompts = len(text_pool) // batch_size
-            text_pool = text_pool[num_sub_prompts - 1 :: num_sub_prompts]  # last subprompt
 
         c_vector = torch.cat([text_pool, c_vector], dim=1)
         uc_vector = torch.cat([uncond_pool, uc_vector], dim=1)
@@ -766,9 +760,6 @@ class PipelineLike:
 
         # we always cast to float32 as this does not cause significant overhead and is compatible with bfloa16
         image = image.cpu().permute(0, 2, 3, 1).float().numpy()
-
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
 
         if output_type == "pil":
             # image = self.numpy_to_pil(image)
@@ -1467,7 +1458,7 @@ def main(args):
     #     scheduler.config.clip_sample = True
 
     # deviceを決定する
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # "mps"を考量してない
+    device = torch.device("mps" if torch.backends.mps.is_available() and torch.backends.mps.is_built() else "cuda" if torch.cuda.is_available() else "cpu")
 
     # custom pipelineをコピったやつを生成する
     if args.vae_slices:

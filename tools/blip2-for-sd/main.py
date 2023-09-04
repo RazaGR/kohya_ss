@@ -22,6 +22,9 @@ def load_model(model_name="Salesforce/blip2-opt-2.7b"):
   if torch.cuda.is_available():
     print("CUDA available, using GPU")
     device = "cuda"
+  elif torch.backends.mps.is_available() and torch.backends.mps.is_built():
+    print("MPS available, using MPS")
+    device = "mps"
   else:
     print("CUDA not available, using CPU")
     device = "cpu"
